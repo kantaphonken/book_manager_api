@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <h1>Book Manager</h1>
+    <button id="toggleFormButton">Sign Up</button>
+
+    <div id="authContainer">
+      <div id="loginForm">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p id="loginError" class="error"></p>
+      </div>
+
+      <div id="signupForm" style="display: none;">
+        <h2>Sign Up</h2>
+        <input type="email" id="signupEmail" placeholder="Email">
+        <input type="password" id="signupPassword" placeholder="Password">
+        <input type="password" id="signupPasswordConfirmation" placeholder="Confirm Password">
+        <button onclick="signup()">Sign Up</button>
+        <p id="signupError" class="error"></p>
+      </div>
+    </div>
+
+    <div id="bookApp" style="display: none;">
+      <button onclick="logout()">Logout</button>
+      <button onclick="showEditForm()">Add New Book</button>
+
+      <div id="bookForm"></div>
+
+      <h2>Books</h2>
+      <p id="apiError" class="error"></p>
+      <ul id="bookList"></ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
