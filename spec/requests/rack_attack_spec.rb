@@ -5,7 +5,7 @@ RSpec.describe Rack::Attack, type: :request do
 
   let!(:user) do
     user = create(:user)
-    user.after_database_authentication
+    user.update(token_expires_at: 2.hour.from_now, authentication_token: SecureRandom.urlsafe_base64)
     user
   end
   let(:ip_address) { '127.0.0.1' }

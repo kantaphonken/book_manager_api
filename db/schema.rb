@@ -42,6 +42,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_08_022608) do
     t.string "email", null: false
     t.string "password_digest", null: false
     t.string "authentication_token"
+    t.datetime "token_expires_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true

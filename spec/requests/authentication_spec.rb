@@ -4,6 +4,7 @@ RSpec.describe 'Users API', type: :request do
   let(:user) { create(:user) }
   let(:headers) { { 'ACCEPT' => 'application/json' } }
   let(:json) { JSON.parse(response.body) }
+
   describe 'POST /api/users/sign_in' do
     context 'when the request is valid' do
       before { post '/api/users/sign_in', params: { email: user.email, password: user.password } , headers: headers }
@@ -30,7 +31,6 @@ RSpec.describe 'Users API', type: :request do
     end
   end
 
-  # Sign Up (POST /api/users)
   describe 'POST /api/users' do
     let(:valid_attributes) { { email: 'newuser@example.com', password: 'password', password_confirmation: 'password'  } }
     let(:invalid_attributes) { { email: 'invalid_email', password: 'password', password_confirmation: 'password' } }
@@ -56,35 +56,51 @@ RSpec.describe 'Users API', type: :request do
     end
   end
 
-  # Sign Out (DELETE /api/users/sign_out)
   describe 'DELETE /api/users/sign_out' do
     before do
       post '/api/users/sign_in', params: { email: user.email, password: user.password } , headers: headers
     end
     context 'when authenticated user signing out' do
-        before do
-          delete "/api/users/sign_out", headers: { 'Authorization' => response.headers['authorization'] }
-        end
-
-        it 'returns status code 204' do
-          expect(response).to have_http_status(:no_content)
-        end
-
-        it 'clears the authentication token' do
-          user.reload
-          expect(user.authentication_token).to be_nil
-        end
+      before do
+        delete "/api/users/sign_out", headers: { 'Authorization' => response.headers['authorization'] }
       end
-      context 'when unauthenticated user signing out' do
-        before { delete "/api/users/sign_out" }
 
-        it 'returns status code 401' do
-          expect(response).to have_http_status(:unauthorized)
-        end
-
-        it 'returns an error message' do
-          expect(response.body).to match(/Unauthorized/)
-        end
+      it 'returns status code 204' do
+        expect(response).to have_http_status(:no_content)
       end
+
+      it 'clears the authentication token' do
+        user.reload
+        expect(user.authentication_token).to be_nil
+      end
+    end
+    context 'when unauthenticated user signing out' do
+      before { delete "/api/users/sign_out" }
+
+      it 'returns status code 401' do
+        expect(response).to have_http_status(:unauthorized)
+      end
+
+      it 'returns an error message' do
+        expect(response.body).to match(/Unauthorized/)
+      end
+    end
+  end
+
+  describe 'GET /api/books (with expired token)' do
+
+    before do
+      Rack::Attack.enabled = false
+      user.update(token_expires_at: 1.hour.ago, authentication_token: SecureRandom.urlsafe_base64)
+      get '/api/books', headers:  { 'Authorization' => "Bearer #{user.authentication_token}" }
+    end
+
+    it 'returns status code 401' do
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'returns an error message' do
+      expect(json['error']).to eq('Unauthorized')
+    end
   end
 end

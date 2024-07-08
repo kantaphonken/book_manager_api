@@ -16,6 +16,7 @@ RSpec.describe "Books API", type: :request do
 
   # GET /api/books
   before do
+    Rack::Attack.enabled = false
     user.update(authentication_token: SecureRandom.urlsafe_base64)
   end
 

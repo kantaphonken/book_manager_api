@@ -3,7 +3,11 @@ module V1
   class Base < Grape::API
     helpers do
       def authenticate!
-        error!('401 Unauthorized', 401) unless current_user
+        if current_user && !current_user.token_expired?
+          env['current_user'] = current_user
+        else
+          error!('Unauthorized', 401)
+        end
       end
 
       def current_user

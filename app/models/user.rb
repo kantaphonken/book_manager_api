@@ -13,6 +13,10 @@ class User < ApplicationRecord
     self.update_column(:authentication_token, nil)
   end
 
+  def token_expired?
+    token_expires_at && token_expires_at <= DateTime.now
+  end
+
   private
 
   def generate_authentication_token
