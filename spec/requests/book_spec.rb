@@ -1,12 +1,9 @@
 require "rails_helper"
 
 RSpec.describe "Books API", type: :request do
-
-  # Authentication setup
-  let(:user) { create(:user) }
+  let(:user) { create(:user, authentication_token: SecureRandom.uuid) }
   let(:headers) { { "Authorization" => "Bearer #{user.authentication_token}" } }
 
-  # Book setup
   let!(:books) { create_list(:book, 5) }
   let(:tags) { create_list(:tag, 2) }
   let(:book_id) { books.first.id }
@@ -14,11 +11,7 @@ RSpec.describe "Books API", type: :request do
   let(:invalid_attributes) { { title: "", author: "" } }
   let(:json) {JSON.parse(response.body)}
 
-  # GET /api/books
-  before do
-    Rack::Attack.enabled = false
-    user.update(authentication_token: SecureRandom.urlsafe_base64)
-  end
+  before { Rack::Attack.enabled = false }
 
   describe "GET /api/books" do
     before { get "/api/books", headers: headers }
@@ -33,7 +26,6 @@ RSpec.describe "Books API", type: :request do
     end
   end
 
-  # GET /api/books/:id
   describe "GET /api/books/:id" do
     context "when the record exists" do
       before do
@@ -93,7 +85,6 @@ RSpec.describe "Books API", type: :request do
     end
   end
 
-  # PUT /api/books/:id
   describe "PUT /api/books/:id" do
     let(:new_attributes) { { title: "Updated Book Title" } }
 
@@ -119,7 +110,6 @@ RSpec.describe "Books API", type: :request do
     end
   end
 
-  # DELETE /api/books/:id
   describe "DELETE /api/books/:id" do
     context "when the record exists" do
       before { delete "/api/books/#{book_id}", headers: headers }

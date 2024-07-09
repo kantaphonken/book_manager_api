@@ -8,12 +8,11 @@ A RESTful API for managing a personal book collection. Built with Ruby on Rails 
   - Secure sign-up and sign-in using hashed passwords (bcrypt).
   - Token-based authentication for API access.
   - Authentication tokens are securely generated and stored in the database.
-  - Automatic token generation and expiration for enhanced security.
 
 - **Book Management (CRUD):**
-  - Add new books with title, author, genre, and publication year.
+  - Add new books with title, author, genre, publication year, and tags.
   - Retrieve a list of all books or details of a specific book.
-  - Update existing book information.
+  - Update existing book information, including tags.
   - Delete books from the collection.
 
 - **Tag Management:**
@@ -33,17 +32,28 @@ A RESTful API for managing a personal book collection. Built with Ruby on Rails 
   - bcrypt (for password hashing)
   - Rack::Attack (for rate limiting)
   - Redis (for storing rate limit counters)
-- **Frontend (Not Included):**
-  - This API is designed to be consumed by a separate frontend application (e.g., built with React, Vue.js, or plain JavaScript).
+- **Frontend:**
+  - Plain JavaScript (HTML, CSS, and JS files located in the `public` folder)
 - **Database:**
   - PostgreSQL
+-  **Development and Testing:**
+  - RSpec
+    - **Testing framework** for behavior-driven development (BDD) to ensure the correctness of the application logic.
+  - FactoryBot
+    - **Provides a convenient way to create test data** for models, making tests easier to write and maintain.
+  - Faker
+    - **Generates realistic fake data** for testing purposes, such as random names, email addresses, and book titles.
+  - rack-test
+    - **Simulates HTTP requests in your tests**, allowing you to test your Rack application without needing a web browser.
+  - shoulda-matchers
+    - **Simplifies the testing of common Rails model validations** with easy-to-use matchers like `validate_presence_of`.
 
 ## Setup Instructions
 
 1.  **Clone the repository:**
 
     ```bash
-    git clone [invalid URL removed]
+    git clone https://github.com/kantaphonken/book_manager_api
     cd book_manager_api
     ```
 
@@ -59,17 +69,21 @@ A RESTful API for managing a personal book collection. Built with Ruby on Rails 
     rails db:create
     rails db:migrate
     ```
-4. **Start redis server:**
+
+4.  **Start Redis server:** (If you haven't installed Redis yet, install it first)
 
     ```bash
     redis-server
     ```
 
-4.  **Start the Rails server:**
+5.  **Start the Rails server:**
 
     ```bash
     rails s
     ```
+
+6.  **Access the frontend:**
+    *   Open `public/index.html` in your browser (e.g., `http://localhost:3000`)
 
 ## API Endpoints
 
@@ -82,11 +96,17 @@ The API endpoints are available at `http://localhost:3000/api`. You can use a to
 - **Password Hashing (bcrypt):** Protects user passwords from being stored in plain text.
 - **Rate Limiting (Rack::Attack):** Mitigates the risk of denial-of-service (DoS) attacks and abuse.
 - **Input Validation:** Protects against common vulnerabilities like SQL injection and cross-site scripting (XSS).
-- **Token Expiration and Cleanup:** Expired tokens are automatically cleared from the database to prevent long-term unauthorized access.
+- **Token Expiration:** Tokens expire after 24 hours to enhance security.
+- **Manual Token Cleanup:** A rake task is provided to manually clear expired tokens from the database:
+
+> **Note:** While automatic token cleanup (e.g., using a scheduled job) is not implemented in this version, you can periodically run the following rake task to remove expired tokens:
+
+```bash
+rake auth:expired_token_cleanup
 
 ## Testing
 
-This project includes RSpec tests for both the API endpoints and the model validations. To run the tests, execute:
+This project includes RSpec tests for the API endpoints, model validations, and Rack Attack rate limiting. To run the tests, execute:
 
 ```bash
 rspec

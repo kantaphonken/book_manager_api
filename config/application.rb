@@ -22,6 +22,6 @@ module BookManagerApi
     # in config/environments, which are processed later.
     #
     # config.time_zone = "Central Time (US & Canada)"
-    config.autoload_paths << Rails.root.join('app', 'api', '*')
+    config.autoload_paths << Rails.root.join('app', '*')
   end
 end

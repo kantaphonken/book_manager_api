@@ -248,8 +248,14 @@ async function handleError(error) {
   }
 }
 
+function toggleForm() {
+  loginForm.style.display = loginForm.style.display  === 'block' ? 'none' : 'block';
+  signupForm.style.display = signupForm.style.display  === 'block' ? 'none': 'block';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   updateUI();
-  toggleFormButton.addEventListener('click', toggleForm);
+  toggleFormButton.addEventListener('click', toggleForm, () => {
+  });
   document.getElementById('bookFormData').addEventListener('submit', handleFormSubmit); // add an eventlistener for the form submit
 });

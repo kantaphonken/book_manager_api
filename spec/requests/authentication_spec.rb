@@ -11,6 +11,9 @@ RSpec.describe 'Users API', type: :request do
 
       it 'returns the user' do
         expect(json['email']).to eq(user.email)
+        user.reload
+        expect(user.authentication_token).to be_present
+        expect(user.token_expires_at).to be_present
       end
 
       it 'returns status code 201' do
@@ -72,6 +75,7 @@ RSpec.describe 'Users API', type: :request do
       it 'clears the authentication token' do
         user.reload
         expect(user.authentication_token).to be_nil
+        expect(user.token_expires_at).to be_nil
       end
     end
     context 'when unauthenticated user signing out' do
@@ -91,7 +95,7 @@ RSpec.describe 'Users API', type: :request do
 
     before do
       Rack::Attack.enabled = false
-      user.update(token_expires_at: 1.hour.ago, authentication_token: SecureRandom.urlsafe_base64)
+      user.update(token_expires_at: 1.hour.ago, authentication_token: SecureRandom.uuid)
       get '/api/books', headers:  { 'Authorization' => "Bearer #{user.authentication_token}" }
     end
 
