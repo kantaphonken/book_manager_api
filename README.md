@@ -37,16 +37,16 @@ A RESTful API for managing a personal book collection. Built with Ruby on Rails 
 - **Database:**
   - PostgreSQL
 -  **Development and Testing:**
-  - RSpec
-    - **Testing framework** for behavior-driven development (BDD) to ensure the correctness of the application logic.
-  - FactoryBot
-    - **Provides a convenient way to create test data** for models, making tests easier to write and maintain.
-  - Faker
-    - **Generates realistic fake data** for testing purposes, such as random names, email addresses, and book titles.
-  - rack-test
-    - **Simulates HTTP requests in your tests**, allowing you to test your Rack application without needing a web browser.
-  - shoulda-matchers
-    - **Simplifies the testing of common Rails model validations** with easy-to-use matchers like `validate_presence_of`.
+   - RSpec
+     - **Testing framework** for behavior-driven development (BDD) to ensure the correctness of the application logic.
+   - FactoryBot
+     - **Provides a convenient way to create test data** for models, making tests easier to write and maintain.
+   - Faker
+     - **Generates realistic fake data** for testing purposes, such as random names, email and book titles.
+   - rack-test
+     - **Simulates HTTP requests in your tests**, allow to test Rack application without needing a web browser.
+   - shoulda-matchers
+     - **Simplifies the testing of common Rails model validations** with easy-to-use matchers like `validate_presence_of`.
 
 ## Setup Instructions
 
@@ -103,6 +103,7 @@ The API endpoints are available at `http://localhost:3000/api`. You can use a to
 
 ```bash
 rake auth:expired_token_cleanup
+```
 
 ## Testing
 
@@ -110,3 +111,45 @@ This project includes RSpec tests for the API endpoints, model validations, and 
 
 ```bash
 rspec
+```
+## API Endpoints
+
+| Endpoint             | Method | Description                       | Requires Authentication | Rate Limited (CRUD) |
+|----------------------|--------|-----------------------------------|--------------------------|---------------------|
+| `/api/users`        | POST   | Create a new user                 | No                      | No                  |
+| `/api/users/sign_in` | POST   | Sign in an existing user           | No                      | No                  |
+| `/api/users/sign_out`| DELETE | Sign out the current user        | Yes                     | No                  |
+| `/api/books`        | GET    | Get a list of all books            | Yes                     | No                  |
+| `/api/books/:id`    | GET    | Get details of a specific book     | Yes                     | No                  |
+| `/api/books`        | POST   | Create a new book                 | Yes                     | Yes                 |
+| `/api/books/:id`    | PUT    | Update an existing book           | Yes                     | Yes                 |
+| `/api/books/:id`    | DELETE | Delete a book                     | Yes                     | Yes                 |
+| `/api/tags`         | GET    | Get a list of all tags or find/create by name. (Use query param `?name=tagname`)| Yes                     | No                  |
+
+## Sample cURL Commands
+
+```bash
+# Sign Up (POST /api/users)
+curl -X POST http://localhost:3000/api/users -H 'Content-Type: application/json' -d '{"email": "user@example.com", "password": "password", "password_confirmation": "password"}'
+
+# Sign In (POST /api/users/sign_in)
+curl -X POST http://localhost:3000/api/users/sign_in -H 'Content-Type: application/json' -d '{"email": "user@example.com", "password": "password"}'
+
+# Sign Out (DELETE /api/users/sign_out)
+curl -X DELETE http://localhost:3000/api/users/sign_out -H 'Authorization: Bearer <your_authentication_token>'
+
+# Get All Books (GET /api/books)
+curl -X GET http://localhost:3000/api/books -H 'Authorization: Bearer <your_authentication_token>'
+
+# Get a Specific Book (GET /api/books/:id)
+curl -X GET http://localhost:3000/api/books/1 -H 'Authorization: Bearer <your_authentication_token>'
+
+# Create a Book (POST /api/books)
+curl -X POST http://localhost:3000/api/books -H 'Content-Type: application/json' -H 'Authorization: Bearer <your_authentication_token>' -d '{"title": "The Hitchhiker's Guide to the Galaxy", "author": "Douglas Adams", "genre": "Science Fiction", "publication_year": 1979, "tags": ["Sci-Fi", "Humor"]}'
+
+# Update a Book (PUT /api/books/:id)
+curl -X PUT http://localhost:3000/api/books/1 -H 'Content-Type: application/json' -H 'Authorization: Bearer <your_authentication_token>' -d '{"title": "The Restaurant at the End of the Universe", "author": "Douglas Adams", "genre": "Science Fiction", "publication_year": 1980}'
+
+# Delete a Book (DELETE /api/books/:id)
+curl -X DELETE http://localhost:3000/api/books/1 -H 'Authorization: Bearer <your_authentication_token>'
+```
